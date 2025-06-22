@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: pg
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${ORDERS_DB_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  vendoradb:
+    image: postgres:15
+    container_name: vendoradb
+    environment:
+      POSTGRES_DB: ${VENDOR_A_DB_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${VENDOR_A_DB_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - vendoradbdata:/var/lib/postgresql/data
+
+  vendorbdb:
+    image: postgres:15
+    container_name: vendorbdb
+    environment:
+      POSTGRES_DB: ${VENDOR_B_DB_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${VENDOR_B_DB_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - vendorbdbdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+
+  order-service:
+    build: ./services/order-service
+    container_name: order-service
+    ports:
+      - "${ORDER_SERVICE_PORT}:3000"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${ORDERS_DB_PORT}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      RABBIT_URL: ${RABBIT_URL}
+
+  stock-service:
+    build: ./services/stock-service
+    container_name: stock-service
+    ports:
+      - "${STOCK_SERVICE_PORT}:3001"
+    depends_on:
+      - postgres
+      - vendoradb
+      - vendorbdb
+    environment:
+      LOCAL_DB_HOST: postgres
+      VENDOR_A_DB_HOST: vendoradb
+      VENDOR_B_DB_HOST: vendorbdb
+      DB_PORT: ${POSTGRES_PORT}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+
+  worker-service:
+    build: ./services/worker-service
+    container_name: worker-service
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      DB_HOST: postgres
+      DB_PORT: ${ORDERS_DB_PORT}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      RABBIT_URL: ${RABBIT_URL}
+
+volumes:
+  pgdata:
+  vendoradbdata:
+  vendorbdbdata:
