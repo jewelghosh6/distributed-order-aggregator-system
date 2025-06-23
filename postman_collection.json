@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "a8df4e5d-dd71-4e20-9052-a488ab841e57",
+		"name": "Order Aggregator system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22192114",
+		"_collection_link": "https://winter-trinity-660233.postman.co/workspace/My-Workspace~f5237f9c-f03a-4ed8-8879-9fced36364f3/collection/22192114-a8df4e5d-dd71-4e20-9052-a488ab841e57?action=share&source=collection_link&creator=22192114"
+	},
+	"item": [
+		{
+			"name": "Stock service",
+			"item": [
+				{
+					"name": "Get vendor current stock",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/:vendorName/stock/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								":vendorName",
+								"stock",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "vendorName",
+									"value": "vendorA"
+								},
+								{
+									"key": "id",
+									"value": "p1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new stock in vendor db",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\":\"p1\",\n    \"quantity\": 15\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/stock/add-new/:vendorName",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"stock",
+								"add-new",
+								":vendorName"
+							],
+							"variable": [
+								{
+									"key": "vendorName",
+									"value": "vendorA"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order service",
+			"item": [
+				{
+					"name": "Place order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\":\"p1\",\n    \"quantity\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"order"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

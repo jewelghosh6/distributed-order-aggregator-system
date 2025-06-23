@@ -35,10 +35,10 @@ async function startVendorSyncWorker() {
 
     try {
       await updateVendorStock(vendor, productId, quantity);
-      console.log(`✅ Vendor stock updated: ${vendor} - ${productId}`);
+      console.log(`Vendor stock updated: ${vendor} - ${productId}`);
       channel.ack(msg);
     } catch (err: any) {
-      console.error(`❌ Vendor sync failed:`, err.message);
+      console.error(`Vendor sync failed:`, err.message);
 
       if (retryCount >= 3) {
         console.warn('Max vendor retries reached. Sending to DLQ.');
@@ -53,7 +53,7 @@ async function startVendorSyncWorker() {
     }
   });
 
-  console.log('🚀 Vendor sync worker running...');
+  console.log('Vendor sync worker running...');
 }
 
 startVendorSyncWorker();
