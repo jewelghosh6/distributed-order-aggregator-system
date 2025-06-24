@@ -3,6 +3,7 @@ import { pool } from './db/client';
 import { initDB } from './db/init';
 import { updateVendorStock } from './utils/updateVendorStock';
 import { getVendorNameFromProductID } from './utils/getVendorNameFromProductID';
+import { startVendorSyncWorker } from './vendorSyncWorker';
 
 const RABBIT_URL = process.env.RABBIT_URL!;
 const MAIN_QUEUE = 'orders_queue';
@@ -75,7 +76,7 @@ async function startWorker() {
 
       const vendor = getVendorNameFromProductID(productId);
 
-      
+
 
       // Tell vendor-sync service
       channel.sendToQueue(VENDOR_SYNC_QUEUE, Buffer.from(JSON.stringify({
@@ -108,3 +109,7 @@ async function startWorker() {
 }
 
 initDB().then(startWorker);
+
+startVendorSyncWorker().then(()=>console.log('Vendor worker started running'));
+
+

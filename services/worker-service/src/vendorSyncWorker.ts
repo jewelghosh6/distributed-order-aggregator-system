@@ -6,7 +6,7 @@ const VENDOR_SYNC_QUEUE = 'vendor_sync';
 const VENDOR_RETRY_QUEUE = 'vendor_sync_retry';
 const VENDOR_DLQ = 'vendor_sync_dlq';
 
-async function startVendorSyncWorker() {
+export async function startVendorSyncWorker() {
   const conn = await connect(RABBIT_URL);
   const channel = await conn.createChannel();
 
@@ -29,6 +29,8 @@ async function startVendorSyncWorker() {
 
   channel.consume(VENDOR_SYNC_QUEUE, async (msg) => {
     if (!msg) return;
+
+    console.log("Inside vendor sync queue");
 
     const { vendor, productId, quantity } = JSON.parse(msg.content.toString());
     const retryCount = msg.properties.headers?.['x-retry-count'] || 0;
@@ -56,4 +58,3 @@ async function startVendorSyncWorker() {
   console.log('Vendor sync worker running...');
 }
 
-startVendorSyncWorker();

@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /app
 
 # Copy wait-for-it script from root of repo to container root
-COPY ../../wait-for-it.sh /wait-for-it.sh
+COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
 # Copy package files and install dependencies
